@@ -1,8 +1,57 @@
 # Monte Carlo Options Strategy Backtesting Engine
 
-A high-performance **C++ backtesting engine** for complex options strategies with Monte Carlo simulation, volatility regime classification, and 3D visualization of P&L across implied volatility and S&P 500 levels.
+![C++17](https://img.shields.io/badge/C%2B%2B-17-blue)
+![CMake](https://img.shields.io/badge/CMake-%E2%89%A53.14-informational)
 
----
+A high-performance **C++ backtesting engine** for complex options strategies
+with Monte Carlo simulation, volatility regime classification, and 3D
+visualization of P&L across implied volatility and S&P 500 levels. A
+header-only C++17 library simulates S&P 500 paths under stochastic
+volatility, prices six multi-leg strategies with Black-Scholes-Merton,
+classifies each day into one of five volatility regimes, compares every
+strategy with an ARIMA(p,d,q)-enhanced variant, and exports the results as
+CSV for the Python visualization scripts.
+
+## Contents
+
+- [Overview](#overview)
+- [Visual Overview](#visual-overview)
+- [Architecture](#architecture)
+- [Strategies Implemented](#strategies-implemented)
+- [Volatility Regime Classification](#volatility-regime-classification)
+- [3D Coordinate System & Live Evolving Surfaces](#3d-coordinate-system--live-evolving-surfaces)
+- [ARIMA Forecasting Model](#arima-forecasting-model)
+- [Monte Carlo Simulation](#monte-carlo-simulation)
+- [Black-Scholes Pricing Engine](#black-scholes-pricing-engine)
+- [Backtesting Engine](#backtesting-engine)
+- [Performance Metrics](#performance-metrics)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Output Files](#output-files)
+- [Configuration](#configuration)
+- [Extending the Engine](#extending-the-engine)
+- [Project Structure](#project-structure)
+- [Mathematical References](#mathematical-references)
+- [Disclaimer](#disclaimer)
+
+## Overview
+
+This engine combines **Monte Carlo path simulation** with a **volatility regime classifier** to backtest multi-leg options strategies on the S&P 500. It answers the fundamental question: *How does each options strategy perform across different implied volatility environments?*
+
+### Key Features
+
+- **Black-Scholes-Merton pricing** with full Greeks (Delta, Gamma, Vega, Theta, Rho)
+- **Newton-Raphson implied volatility** solver
+- **Stochastic volatility** Monte Carlo simulator (Heston-lite with CIR variance process)
+- **6 options strategies**: Straddles, Strangles, Butterflies, Iron Condors, Iron Butterflies, Calendar Spreads
+- **Volatility regime detection**: Low, Medium, High, Expansion, Crush
+- **3D coordinate system** mapping IV × PnL × S&P 500 with regime colour-coding
+- **Animated time-evolving PnL surfaces** — watch surfaces morph minute-by-minute as spot, IV, and DTE change
+- **ARIMA(p,d,q) forecasting** — auto-fitted IV/spot models with predictive regime switching, early exit, and IV direction filters
+- **S&P 500 buy-and-hold benchmark** comparison
+- **Comprehensive statistics**: Sharpe, Sortino, max drawdown, win rate, profit factor, alpha
+- **Per-regime P&L attribution** — see which vol environment each strategy profits in
+- **CSV export** + **Python 3D visualization** suite
 
 ## Visual Overview
 
@@ -80,49 +129,6 @@ The surfaces below update **minute-by-minute** as spot price and implied volatil
 |:-:|:-:|
 | ![Regime Distribution](docs/images/regime_distribution.png) | ![IV Time-Series](docs/images/iv_timeseries_regimes.png) |
 
----
-
-## Table of Contents
-
-- [Overview](#overview)
-- [Architecture](#architecture)
-- [Strategies Implemented](#strategies-implemented)
-- [Volatility Regime Classification](#volatility-regime-classification)
-- [3D Coordinate System & Live Evolving Surfaces](#3d-coordinate-system--live-evolving-surfaces)
-- [ARIMA Forecasting Model](#arima-forecasting-model)
-- [Monte Carlo Simulation](#monte-carlo-simulation)
-- [Black-Scholes Pricing Engine](#black-scholes-pricing-engine)
-- [Backtesting Engine](#backtesting-engine)
-- [Performance Metrics](#performance-metrics)
-- [Getting Started](#getting-started)
-- [Project Structure](#project-structure)
-- [Output Files](#output-files)
-- [Configuration](#configuration)
-- [Extending the Engine](#extending-the-engine)
-
----
-
-## Overview
-
-This engine combines **Monte Carlo path simulation** with a **volatility regime classifier** to backtest multi-leg options strategies on the S&P 500. It answers the fundamental question: *How does each options strategy perform across different implied volatility environments?*
-
-### Key Features
-
-- **Black-Scholes-Merton pricing** with full Greeks (Delta, Gamma, Vega, Theta, Rho)
-- **Newton-Raphson implied volatility** solver
-- **Stochastic volatility** Monte Carlo simulator (Heston-lite with CIR variance process)
-- **6 options strategies**: Straddles, Strangles, Butterflies, Iron Condors, Iron Butterflies, Calendar Spreads
-- **Volatility regime detection**: Low, Medium, High, Expansion, Crush
-- **3D coordinate system** mapping IV × PnL × S&P 500 with regime colour-coding
-- **Animated time-evolving PnL surfaces** — watch surfaces morph minute-by-minute as spot, IV, and DTE change
-- **ARIMA(p,d,q) forecasting** — auto-fitted IV/spot models with predictive regime switching, early exit, and IV direction filters
-- **S&P 500 buy-and-hold benchmark** comparison
-- **Comprehensive statistics**: Sharpe, Sortino, max drawdown, win rate, profit factor, alpha
-- **Per-regime P&L attribution** — see which vol environment each strategy profits in
-- **CSV export** + **Python 3D visualization** suite
-
----
-
 ## Architecture
 
 ```
@@ -159,8 +165,6 @@ This engine combines **Monte Carlo path simulation** with a **volatility regime 
     │         CSV Export → Python viz         │
     └────────────────────────────────────────┘
 ```
-
----
 
 ## Strategies Implemented
 
@@ -289,8 +293,6 @@ Payoff:
 |:-:|:-:|
 | ![Strangle 3D](docs/images/5_Short_Strangle_3d_regime.png) | ![Strangle Surface](docs/images/5_Short_Strangle_pnl_surface.png) |
 
----
-
 ## Volatility Regime Classification
 
 The engine classifies each trading day into one of five regimes based on implied volatility dynamics:
@@ -333,8 +335,6 @@ regime_clf.high_iv_threshold = 18.0;   // VIX above → "High"
 regime_clf.expansion_rate    =  1.0;   // Monthly vol pts rise → "Expansion"
 regime_clf.crush_rate        = -1.0;   // Monthly vol pts drop → "Crush"
 ```
-
----
 
 ## 3D Coordinate System & Live Evolving Surfaces
 
@@ -390,8 +390,6 @@ Frame generation pipeline:
   4. Export: Spot, IV, PnL, Delta, Gamma, Vega, Theta per grid point
   5. Animate: 120 frames → compressed GIF (40 frames, 200ms/frame)
 ```
-
----
 
 ## ARIMA Forecasting Model
 
@@ -469,8 +467,6 @@ The ARIMA engine (`include/arima.hpp`) includes:
 - **Rolling forecasts** at configurable intervals during the backtest
 - **CSV export** of forecasts, residuals, and fitted values
 
----
-
 ## Monte Carlo Simulation
 
 The engine uses a **stochastic volatility model** (Heston-lite) with a CIR variance process:
@@ -509,8 +505,6 @@ Z₂ = ρ · Z₁ + √(1 − ρ²) · Z_independent
 | Mean-reversion | κ | 3.0 | Speed of reversion |
 | Spot-vol correlation | ρ | −0.70 | Leverage effect |
 
----
-
 ## Black-Scholes Pricing Engine
 
 Full analytical Black-Scholes-Merton implementation:
@@ -541,8 +535,6 @@ Newton-Raphson solver with:
 - Convergence tolerance: 1e-8
 - Maximum iterations: 100
 - Floor: σ > 0.1%
-
----
 
 ## Backtesting Engine
 
@@ -575,8 +567,6 @@ Newton-Raphson solver with:
 | Transaction cost | $0.65 | Per contract per leg |
 | Contracts | 10 | Contracts per trade (100 shares each) |
 
----
-
 ## Performance Metrics
 
 ### Strategy Equity Curves with Drawdown
@@ -598,111 +588,69 @@ The engine computes the following for each strategy:
 | **Avg PnL / Trade** | Mean P&L across all trades |
 | **Regime Attribution** | P&L and trade count per vol regime |
 
----
-
-## Getting Started
+## Installation
 
 ### Prerequisites
 
 - **C++17** compiler (GCC 9+, Clang 10+, MSVC 2019+)
 - **CMake** 3.14+
-- **Python 3.7+** with `matplotlib`, `numpy`, `pandas` (for visualization)
+- **Python 3.7+** with `matplotlib`, `numpy`, `pandas` and `Pillow` (for
+  visualization only)
 
-### Build & Run
+The engine itself has no third-party C++ dependencies; all models are
+implemented in the headers under `include/`.
+
+### Build
 
 ```bash
-# Clone the repository
-git clone https://github.com/gelatotrade/Monte-Carlo-Simulation-to-backtest-Strategies.git
+git clone https://github.com/grzresearch/Monte-Carlo-Simulation-to-backtest-Strategies.git
 cd Monte-Carlo-Simulation-to-backtest-Strategies
 
-# Build
-mkdir build && cd build
-cmake .. -DCMAKE_BUILD_TYPE=Release
-make -j$(nproc)
-cd ..
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j
+```
 
-# Run the backtesting engine
+The build also creates the `output/` directory in the repository root.
+
+### Debug build
+
+The Debug configuration compiles with `-O0` and AddressSanitizer:
+
+```bash
+cmake -S . -B build-debug -DCMAKE_BUILD_TYPE=Debug
+cmake --build build-debug -j
+```
+
+### Python dependencies
+
+```bash
+pip install matplotlib numpy pandas Pillow
+```
+
+## Usage
+
+Run all commands from the repository root: the engine writes its CSV files
+to `output/` relative to the current directory, and the scripts read them
+from there.
+
+```bash
+# Run the backtesting engine (writes CSV files to output/)
 ./build/backtest
 
-# Generate static 3D visualizations
-pip install matplotlib numpy pandas Pillow
+# Generate static 3D visualizations (writes PNGs to output/plots/)
 python3 scripts/visualize.py
 
 # Generate animated time-evolving surface GIFs
 python3 scripts/animate_surfaces.py
+
+# Generate ARIMA forecast diagnostics and comparison plots
+python3 scripts/arima_plots.py
 ```
 
-### Debug Build
-
-```bash
-mkdir build-debug && cd build-debug
-cmake .. -DCMAKE_BUILD_TYPE=Debug
-make -j$(nproc)
-```
-
----
-
-## Project Structure
-
-```
-Monte-Carlo-Simulation-to-backtest-Strategies/
-├── CMakeLists.txt              # Build configuration
-├── README.md                   # This file
-│
-├── docs/
-│   └── images/                 # Visualization PNGs + GIFs (committed to repo)
-│       ├── *_3d_regime.png     # 3D regime scatter plots
-│       ├── *_pnl_surface.png   # PnL surface plots
-│       ├── *_animated.gif      # Animated time-evolving PnL surfaces
-│       ├── evolving_surfaces_composite.png
-│       ├── *_arima_forecast.png      # ARIMA IV forecast fan charts
-│       ├── *_arima_equity_comparison.png  # Standard vs ARIMA equity
-│       ├── *_arima_trade_analysis.png # ARIMA signal analysis
-│       ├── *_arima_diagnostics.png   # Residual ACF, fitted vs actual
-│       ├── arima_comparison.png      # All strategies: Standard vs ARIMA
-│       ├── equity_curves_comparison.png
-│       ├── regime_distribution.png
-│       └── iv_timeseries_regimes.png
-│
-├── include/                    # Header-only library
-│   ├── common.hpp              # Types, constants, date helpers, normal CDF
-│   ├── black_scholes.hpp       # BSM pricing engine & Greeks
-│   ├── monte_carlo.hpp         # Stochastic vol MC simulator
-│   ├── strategies.hpp          # Strategy factory (6 strategies) & evaluator
-│   ├── vol_regime.hpp          # Vol regime classifier & 3D surface
-│   ├── arima.hpp               # ARIMA(p,d,q) model, auto-fit, forecast, diagnostics
-│   └── backtester.hpp          # Backtesting engine with full statistics
-│
-├── src/
-│   └── main.cpp                # Entry point: config → simulate → backtest → export
-│
-├── scripts/
-│   ├── visualize.py            # Python 3D visualization suite (5 plot types)
-│   ├── animate_surfaces.py     # Animated time-evolving surface GIF generator
-│   └── arima_plots.py          # ARIMA forecast diagnostics & comparison plots
-│
-├── output/                     # Generated at runtime
-│   ├── *_equity.csv            # Equity curves per strategy
-│   ├── *_trades.csv            # Trade logs per strategy
-│   ├── *_3d_surface.csv        # 3D scatter data (IV × PnL × SP500)
-│   ├── *_pnl_grid.csv          # PnL surface grids (Spot × IV)
-│   ├── *_evolving.csv          # Time-evolving surface data (120 frames)
-│   ├── *_arima_forecasts.csv   # Rolling ARIMA IV/spot forecasts
-│   ├── *_arima_equity.csv      # ARIMA-enhanced equity curves
-│   ├── *_arima_trades.csv      # Trade log with ARIMA metadata
-│   ├── *_arima_iv_diag.csv     # ARIMA model residuals & diagnostics
-│   └── plots/                  # Generated PNG/GIF visualizations
-│       ├── *_3d_regime.png     # 3D regime scatter plots
-│       ├── *_pnl_surface.png   # PnL surface plots
-│       ├── *_animated.gif      # Animated evolving surface GIFs
-│       ├── equity_curves_comparison.png
-│       ├── regime_distribution.png
-│       └── iv_timeseries_regimes.png
-│
-└── build/                      # CMake build directory
-```
-
----
+`animate_surfaces.py` writes the GIFs to `output/plots/` and copies them,
+together with `evolving_surfaces_composite.png`, to `docs/images/`;
+`arima_plots.py` writes its figures to `docs/images/`. Running these two
+scripts therefore replaces the figures shown in this README.
 
 ## Output Files
 
@@ -727,8 +675,6 @@ Monte-Carlo-Simulation-to-backtest-Strategies/
 | **Equity Curves** | All strategies vs S&P 500 benchmark with drawdown |
 | **Regime Distribution** | Pie chart (trade count) + bar chart (PnL by regime) |
 | **IV Time-Series** | Implied vol over time with regime-shaded background |
-
----
 
 ## Configuration
 
@@ -766,8 +712,6 @@ regime_clf.high_iv_threshold = 18.0;
 regime_clf.expansion_rate    =  1.0;
 regime_clf.crush_rate        = -1.0;
 ```
-
----
 
 ## Extending the Engine
 
@@ -821,7 +765,65 @@ Subclass or modify `VolRegimeClassifier::classify()` to add conditions based on:
 - VIX-of-VIX (VVIX) level
 - Macro indicators
 
----
+## Project Structure
+
+```
+Monte-Carlo-Simulation-to-backtest-Strategies/
+├── CMakeLists.txt              # Build configuration
+├── README.md
+│
+├── include/                    # Header-only library
+│   ├── common.hpp              # Types, constants, date helpers, normal CDF
+│   ├── black_scholes.hpp       # BSM pricing engine & Greeks
+│   ├── monte_carlo.hpp         # Stochastic vol MC simulator
+│   ├── strategies.hpp          # Strategy factory (6 strategies) & evaluator
+│   ├── vol_regime.hpp          # Vol regime classifier & 3D surface
+│   ├── arima.hpp               # ARIMA(p,d,q) model, auto-fit, forecast, diagnostics
+│   └── backtester.hpp          # Backtesting engine with full statistics
+│
+├── src/
+│   └── main.cpp                # Entry point: config → simulate → backtest → export
+│
+├── scripts/
+│   ├── visualize.py            # Python 3D visualization suite (5 plot types)
+│   ├── animate_surfaces.py     # Animated time-evolving surface GIF generator
+│   └── arima_plots.py          # ARIMA forecast diagnostics & comparison plots
+│
+├── docs/
+│   └── images/                 # Visualization PNGs + GIFs (committed to repo)
+│       ├── *_3d_regime.png     # 3D regime scatter plots
+│       ├── *_pnl_surface.png   # PnL surface plots
+│       ├── *_animated.gif      # Animated time-evolving PnL surfaces
+│       ├── evolving_surfaces_composite.png
+│       ├── *_arima_forecast.png      # ARIMA IV forecast fan charts
+│       ├── *_arima_equity_comparison.png  # Standard vs ARIMA equity
+│       ├── *_arima_trade_analysis.png # ARIMA signal analysis
+│       ├── *_arima_diagnostics.png   # Residual ACF, fitted vs actual
+│       ├── arima_comparison.png      # All strategies: Standard vs ARIMA
+│       ├── equity_curves_comparison.png
+│       ├── regime_distribution.png
+│       └── iv_timeseries_regimes.png
+│
+├── output/                     # Generated at runtime (not tracked)
+│   ├── *_equity.csv            # Equity curves per strategy
+│   ├── *_trades.csv            # Trade logs per strategy
+│   ├── *_3d_surface.csv        # 3D scatter data (IV × PnL × SP500)
+│   ├── *_pnl_grid.csv          # PnL surface grids (Spot × IV)
+│   ├── *_evolving.csv          # Time-evolving surface data (120 frames)
+│   ├── *_arima_forecasts.csv   # Rolling ARIMA IV/spot forecasts
+│   ├── *_arima_equity.csv      # ARIMA-enhanced equity curves
+│   ├── *_arima_trades.csv      # Trade log with ARIMA metadata
+│   ├── *_arima_iv_diag.csv     # ARIMA model residuals & diagnostics
+│   └── plots/                  # Generated PNG/GIF visualizations
+│       ├── *_3d_regime.png     # 3D regime scatter plots
+│       ├── *_pnl_surface.png   # PnL surface plots
+│       ├── *_animated.gif      # Animated evolving surface GIFs
+│       ├── equity_curves_comparison.png
+│       ├── regime_distribution.png
+│       └── iv_timeseries_regimes.png
+│
+└── build/                      # CMake build directory (not tracked)
+```
 
 ## Mathematical References
 
@@ -830,8 +832,6 @@ Subclass or modify `VolRegimeClassifier::classify()` to add conditions based on:
 - **Cox, J.C., Ingersoll, J.E. & Ross, S.A.** (1985). "A Theory of the Term Structure of Interest Rates." *Econometrica*.
 - **Natenberg, S.** (2015). *Option Volatility and Pricing*. McGraw-Hill.
 
----
-
-## License
+## Disclaimer
 
 This project is provided for educational and research purposes. Use at your own risk. Past simulated performance does not guarantee future results.
