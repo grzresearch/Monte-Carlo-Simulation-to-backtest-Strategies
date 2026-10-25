@@ -195,12 +195,15 @@ def plot_arima_trade_analysis(strategy_name, trades_df):
             data.append(early["PnL"].values)
             labels.append(f"ARIMA Early ({len(early)})")
         if data:
-            bp = ax3.boxplot(data, labels=labels, patch_artist=True,
+            bp = ax3.boxplot(data, patch_artist=True,
                            boxprops=dict(facecolor=DARK_FACE, color="#58a6ff"),
                            medianprops=dict(color="#f78166"),
                            whiskerprops=dict(color="#58a6ff"),
                            capprops=dict(color="#58a6ff"),
                            flierprops=dict(markeredgecolor="#58a6ff", markersize=3))
+            # Set the tick labels separately: the boxplot keyword changed
+            # from "labels" to "tick_labels" in Matplotlib 3.9.
+            ax3.set_xticklabels(labels)
     ax3.set_title("PnL: Normal vs Early Exit", fontsize=10)
     ax3.set_ylabel("PnL ($)")
 
